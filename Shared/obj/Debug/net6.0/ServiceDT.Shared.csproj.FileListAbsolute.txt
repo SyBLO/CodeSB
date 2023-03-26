@@ -1,0 +1,12 @@
+C:\App\sbd\ServiceDT\ServiceDT\Shared\bin\Debug\net6.0\ServiceDT.Shared.deps.json
+C:\App\sbd\ServiceDT\ServiceDT\Shared\bin\Debug\net6.0\ServiceDT.Shared.dll
+C:\App\sbd\ServiceDT\ServiceDT\Shared\bin\Debug\net6.0\ServiceDT.Shared.pdb
+C:\App\sbd\ServiceDT\ServiceDT\Shared\obj\Debug\net6.0\ServiceDT.Shared.csproj.AssemblyReference.cache
+C:\App\sbd\ServiceDT\ServiceDT\Shared\obj\Debug\net6.0\ServiceDT.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\App\sbd\ServiceDT\ServiceDT\Shared\obj\Debug\net6.0\ServiceDT.Shared.AssemblyInfoInputs.cache
+C:\App\sbd\ServiceDT\ServiceDT\Shared\obj\Debug\net6.0\ServiceDT.Shared.AssemblyInfo.cs
+C:\App\sbd\ServiceDT\ServiceDT\Shared\obj\Debug\net6.0\ServiceDT.Shared.csproj.CoreCompileInputs.cache
+C:\App\sbd\ServiceDT\ServiceDT\Shared\obj\Debug\net6.0\ServiceDT.Shared.dll
+C:\App\sbd\ServiceDT\ServiceDT\Shared\obj\Debug\net6.0\refint\ServiceDT.Shared.dll
+C:\App\sbd\ServiceDT\ServiceDT\Shared\obj\Debug\net6.0\ServiceDT.Shared.pdb
+C:\App\sbd\ServiceDT\ServiceDT\Shared\obj\Debug\net6.0\ref\ServiceDT.Shared.dll
