@@ -1,0 +1,67 @@
+﻿@using Microsoft.Extensions.Logging
+@using ServiceDT.Shared.Models
+@inject ILogger<FormCreateSidePanel> Logger
+@inject ISidepanelService Sidepanel
+@inject HttpClient client
+@inject NavigationManager uriHelper
+
+
+
+ <EditForm Model="@act"  OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary /> 
+
+ @*<RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" class="mt-2 mb-4" Text="Add New ECR" Click="@CreateActionList" />*@
+
+ @*<RadzenDataGrid @ref="gridaction" Data="@dev.ActionItems" TItem="ActionItem"  AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" >
+
+               <Columns>
+                   <RadzenDataGridColumn TItem="ActionItem" Property="ActionItemId" Title="ActionId" Width="80px"/> 
+                   <RadzenDataGridColumn TItem="ActionItem" Property="SuiviBEId" Title="DeveloperId" Width="80px"/>                      
+                   <RadzenDataGridColumn TItem="ActionItem" Property="ECR" Title="Title" Width="80px"/>
+                   <RadzenDataGridColumn TItem="ActionItem" Property="ECO" Title="Description" Width="80px"/>
+                   
+                   
+               </Columns>
+ </RadzenDataGrid> *@
+
+
+        <div class="mb-3">
+            <label class="form-label">Primary Classification</label>
+            <InputSelect @bind-Value="act.State" class="form-control">
+                <option value="">Select State ...</option>
+                <option value="Open">Open</option>
+                <option value="Close">Closed</option>                
+            </InputSelect>
+        </div>
+
+        <div class="d-grid gap-2">         
+            <button type="submit" class="btn btn-success">@ButtonAction</button>
+            <button class="btn btn-outline-secondary" type="reset">Reset</button>
+            <button class="btn btn-outline-danger" type="button" @onclick="Sidepanel.SoftClose">Cancel</button>
+        </div>
+
+ </EditForm>
+
+
+@code{
+   
+
+    RadzenDataGrid<ActionItem>? gridaction;
+
+    [Parameter] public ActionItem? act { get; set; }  
+    [Parameter] public EventCallback OnValidSubmit { get; set; }   
+    [Parameter] public string ButtonAction { get; set; } = "Save";
+  
+  //  [Parameter] public int suivibeId { get; set; }
+
+    
+  //  async Task CreateActionList()
+  //  {        
+   //     dev.SuiviBEId =  suivibeId;    
+   //     await client.PutAsJsonAsync($"api/etude/{suivibeId}", dev);
+   //     await client.PostAsJsonAsync($"api/etude/{suivibeId}", dev);
+  //      await client.GetAsync($"api/etude/{suivibeId}");
+ //       uriHelper.NavigateTo($"/developer/edit/{suivibeId}");
+ //   }
+}

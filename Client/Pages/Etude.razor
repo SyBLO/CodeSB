@@ -1,5 +1,6 @@
 ﻿@page "/etude"
 @using ServiceDT.Shared.Models
+@using System.Text.Json
 
 @inject HttpClient client
 @inject NavigationManager uriHelper
@@ -8,7 +9,7 @@
 @inject IJSRuntime js
 @inject IJSRuntime JSRuntime
 
-
+@inject DialogService DialogService
 
 <div class="row">
     <div class="col-xl">
@@ -35,7 +36,7 @@
                 Data="@developers" TItem="SuiviBE" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow" Sort="@Reset" Page="@Reset" Filter="@Reset" ColumnWidth="200px">
    <Template Context="developers">
         @if (developers.Statut != null)
-            {
+        {
                  <div class="row my-4">   
                     <div class="col-sm-2">
                             <h5><span class="small d-block text-muted">Statut</span></h5>
@@ -56,39 +57,36 @@
                         </div>*@                        
                     </div>
                  </div>
-        }
-   <RadzenTabs>
-       <Tabs>
-             <RadzenTabsItem Text="Commentaires">
-               @*<RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" class="mt-2 mb-4" Text="Add New ECR" Click="@SaveRow" />*@
-                <div class="row">
-                    <div class="col-xl">
-                           <RadzenLabel Text="Description détaillée" /><br />
-                           @*  <RadzenHtmlEditor @bind-Value=@developers.Description style="height: 200px; margin-bottom: 1rem;" UploadUrl="upload/image" />
-                             <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveDescription(developers))" />*@
+        }       
+
+       <RadzenTabs>
+           <Tabs>
+                 <RadzenTabsItem Text="Commentaires">
+                   @*<RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" class="mt-2 mb-4" Text="Add New ECR" Click="@SaveRow" />*@
+                    <div class="row">
+                        <div class="col-xl">
+                               <RadzenLabel Text="Description détaillée" /><br />                       
                                                   
-                     </div>
-                </div>
-             </RadzenTabsItem>
-             <RadzenTabsItem Text="Actions">
-                 @*<RadzenDataGrid AllowFiltering="true" AllowPaging="true" AllowSorting="true" Data="@developers" TItem="SuiviBE">
-                      <RadzenDataGridColumn TItem="SuiviBE" Property="developers.Description" Title="Actions" />
-                  </RadzenDataGrid>*@
-            </RadzenTabsItem>
-       </Tabs>
-   </RadzenTabs>
+                         </div>
+                    </div>
+                 </RadzenTabsItem>
+                 <RadzenTabsItem Text="Actions">
+                
+                </RadzenTabsItem>
+           </Tabs>
+       </RadzenTabs>
+
   </Template>  
                 
     <Columns>
+         <RadzenDataGridColumn TItem="SuiviBE" Property="SuiviBEId" Title="Subject" Width="280px" />
         <RadzenDataGridColumn TItem="SuiviBE" FormatString="{0:dd MMM yyyy}" Property="Date" Title="Initial Date"> 
           <Template Context="developers">
                 @String.Format("{0:d}", developers.Date)
           </Template>
         <EditTemplate Context="developers">
             <RadzenDatePicker @bind-Value=@developers.Date />            
-        </EditTemplate>
-         
-
+        </EditTemplate>      
         </RadzenDataGridColumn>
         <RadzenDataGridColumn TItem="SuiviBE" Property="Metier" Title="Subject" Width="280px" >
             <EditTemplate Context="developers">
@@ -117,19 +115,7 @@
                             <span style="margin-left: 4px">closed</span>
                         </div>
                     }     
-                </Template>
-
-                 @*<EditTemplate Context="developers">
-                     <InputSelect id="Statut" class="form-control" widt="50%" @bind-Value=@developers.Statut>
-                                                        @foreach (var option in statut)
-                                                        {
-                                                            <option value="@option.StatutName">
-                                                                @option.StatutId
-                                                            </option>
-                                                        }
-                     </InputSelect>
-                 </EditTemplate>*@
-
+                </Template>  
           </RadzenDataGridColumn>
         <RadzenDataGridColumn TItem="SuiviBE" Property="FEE" Title="FEE" />
         <RadzenDataGridColumn TItem="SuiviBE" Property="Nadt" Title=" N° ADT"/> 
@@ -139,58 +125,103 @@
         <RadzenDataGridColumn TItem="SuiviBE" Context="developers" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="156px">
             <Template Context="developers">
                 <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(args => EditRow(developers))" @onclick:stopPropagation="true">
-                </RadzenButton>
-                @*<RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteRow(developers))"  @onclick:stopPropagation="true">
-                </RadzenButton>*@
+                </RadzenButton>              
             </Template>
              <EditTemplate Context="developers">
                 <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveRow(developers))">
-                </RadzenButton>
-                @*<RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@((args) => CancelEdit(developers))">
-                </RadzenButton>
-                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteRow(developers))">
-                </RadzenButton>*@
+                </RadzenButton>                
              </EditTemplate>
         </RadzenDataGridColumn>
     </Columns>
 </RadzenDataGrid>
 
 
+    <RadzenLabel>Actions</RadzenLabel>
+         <SidepanelComponent @ref="createSidepanel" Title="Create" SubTitle="Actions">
+            <FormCreateSidePanel ButtonAction="Create" act="@act" OnValidSubmit="@CreateActionList" />
+        </SidepanelComponent>
+
+        <RadzenButton Text="Create Action" Icon="report" ButtonStyle="ButtonStyle.Light" Click=@OpenCreateForm />
+        <RadzenButton Variant="Variant.Outlined" Click=@Close Text="Light" ButtonStyle="ButtonStyle.Light" />
+        <Codeblock Code="@codeblock1" />
+        <hr />
 
 
-@code
+
+<RadzenDataGrid @ref="gridaction"  AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="DataGridEditMode.Single"
+                Data="@dev.ActionItems" TItem="ActionItem" CellRender="@CellRender" RowRender="@RowRender" ExpandMode="DataGridExpandMode.Single"
+                SelectionMode="DataGridSelectionMode.Single" >
+
+               <Columns>
+                   <RadzenDataGridColumn TItem="ActionItem" Property="ActionItemId" Title="ActionItemId" Width="80px"/> 
+                   <RadzenDataGridColumn TItem="ActionItem" Property="SuiviBEId" Title="SuiviBEId" Width="80px"/>                      
+                   <RadzenDataGridColumn TItem="ActionItem" Property="ECR" Title="Title" Width="80px"/>
+                   <RadzenDataGridColumn TItem="ActionItem" Property="ECO" Title="Description" Width="80px"/>
+                   
+                     <RadzenDataGridColumn TItem="ActionItem" Property="ActionId" Context="action" Filterable="false" Sortable="false" TextAlign="TextAlign.Left" Width="50px">
+                       <Template Context="action">
+                           <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Secondary" Size="ButtonSize.Small"  @onclick:stopPropagation="true" />
+                       </Template>
+                   </RadzenDataGridColumn>
+               </Columns>
+ </RadzenDataGrid> 
+
+
+@code 
 {
-    RadzenDataGrid<SuiviBE>? grid;
+        RadzenDataGrid<ActionItem>? gridaction;
+        RadzenDataGrid<SuiviBE>? grid; 
+        //SuiviBE[]? developers { get; set; }
 
-    [Parameter] public int developerId { get; set; }
-    SuiviBE dev = new SuiviBE();
+        ActionItem act = new ActionItem();   
 
-    DateTime? value = DateTime.Now;
+        SuiviBE dev = new SuiviBE();   
 
-    IList<SuiviBE>? selectedDeveloper; 
+        IEnumerable<ActionItem>? action;
+        IEnumerable<SuiviBE>? developers;
 
-    void ClearSelection()
-    {
-        selectedDeveloper = null;
-    }
+        DateTime? value = DateTime.Now;
 
-    void RowRender(RowRenderEventArgs<SuiviBE> args)
-    {
-        args.Expandable = args.Data.Metier != "null";
-    }
+        IList<SuiviBE>? selectedDeveloper; 
 
-    SuiviBE suiviBEToInsert;
-    SuiviBE suiviBEToUpdate;
-    IEnumerable<SuiviBE> developers;
+        [Parameter] public bool WithColumnPicker { get; set; } = false;
+        [Parameter] public int suivibeId { get; set; }
 
-    bool EmployeeIDVisible = false;
-    [Parameter] public bool WithColumnPicker { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
-        developers = await client.GetFromJsonAsync<SuiviBE[]>("api/etude");      
+        developers= await client.GetFromJsonAsync<SuiviBE[]>($"api/etude");
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+       };
+       dev = await client.GetFromJsonAsync<SuiviBE>($"api/etude/{suivibeId}",options);    
+    }   
 
+   //  protected async override Task OnParametersSetAsync()
+   // {
+         
+    //   var options = new JsonSerializerOptions
+    //   {
+    //        PropertyNameCaseInsensitive = true
+    //   };    
+    //    dev = await client.GetFromJsonAsync<SuiviBE>($"api/etude/{suivibeId}",options);     
+
+  //  }
+       
+    async Task CreateActionList()
+    {        
+        act.SuiviBEId = suivibeId;    
+       await client.PutAsJsonAsync($"api/etude/{suivibeId}", act);
+       // await client.PostAsJsonAsync($"api/etude/{suivibeId}", act);
+        await client.GetAsync($"api/etude/{suivibeId}");
+        uriHelper.NavigateTo($"/etude");
     }
+        
+
+
+    SuiviBE suiviBEToInsert;
+    SuiviBE suiviBEToUpdate; 
 
     void Reset()
     {
@@ -200,7 +231,7 @@
 
     async Task SaveDescription()
     {
-        await client.PostAsJsonAsync("api/etude", developers);
+        await client.PostAsJsonAsync("api/etude",developers);
         uriHelper.NavigateTo("etude");
     }
 
@@ -274,4 +305,32 @@
         new StatutList() { StatutId = "0", StatutName = "Open" },
         new StatutList() { StatutId = "1", StatutName = "Close" }
     };
+            
+  
+    void ClearSelection()
+    {
+        selectedDeveloper = null;
+    }
+
+    void RowRender(RowRenderEventArgs<SuiviBE> args)
+    {
+        args.Expandable = args.Data.Metier != "null";
+    }
+
+    private SidepanelComponent? editSidepanel;
+    private SidepanelComponent? createSidepanel;
+    private ActionItem? actions;
+    private string codeblock1 => "<SidepanelComponent @ref=\"createSidepanel\" Title=\"CreateSidePanel\" SubTitle=\"Starship\">\n    <Create/>\n</SidepanelComponent>";
+       
+    private void OpenCreateForm() { createSidepanel.Open(); }
+    private void Close() { createSidepanel.Close(); }
+
+     void CellRender(DataGridCellRenderEventArgs<ActionItem> args)
+    {
+    }
+    void RowRender(RowRenderEventArgs<ActionItem> args)
+    {
+    }
+
+
 }
