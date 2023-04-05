@@ -31,7 +31,7 @@
 
 <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" class="mt-2 mb-4" Text="Add New ECR" Click="@InsertRow" Disabled=@(suiviBEToInsert != null || suiviBEToUpdate != null) />
 
-<RadzenDataGrid @ref="grid" AllowAlternatingRows="false" AllowFiltering="true" AllowPaging="true" PageSize="10" AllowSorting="true"  EditMode="DataGridEditMode.Single" 
+<RadzenDataGrid @ref="grid" Property="dev.SuiviBEId" AllowAlternatingRows="false" AllowFiltering="true" AllowPaging="true" PageSize="10" AllowSorting="true"  EditMode="DataGridEditMode.Single" 
                 ExpandMode="DataGridExpandMode.Single" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@selectedDeveloper RowRender="@RowRender"
                 Data="@developers" TItem="SuiviBE" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow" Sort="@Reset" Page="@Reset" Filter="@Reset" ColumnWidth="200px">
    <Template Context="developers">
@@ -76,10 +76,43 @@
            </Tabs>
        </RadzenTabs>
 
+
+       <RadzenLabel>Actions</RadzenLabel>
+         <SidepanelComponent @ref="createSidepanel" Title="Create" SubTitle="Actions">
+            <FormCreateSidePanel ButtonAction="Create" act="@act" OnValidSubmit="@CreateActionList" />
+        </SidepanelComponent>
+
+        <RadzenButton Text="Create Action" Icon="report" ButtonStyle="ButtonStyle.Light" Click=@OpenCreateForm />
+        <RadzenButton Variant="Variant.Outlined" Click=@Close Text="Light" ButtonStyle="ButtonStyle.Light" />
+        <Codeblock Code="@codeblock1" />
+        <hr />
+
+       <RadzenDataGrid @ref="gridaction"  AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="DataGridEditMode.Single"
+                Data="@dev.ActionItems" TItem="ActionItem" CellRender="@CellRender" RowRender="@RowRender" ExpandMode="DataGridExpandMode.Single"
+                SelectionMode="DataGridSelectionMode.Single" KeyProperty="dev.SuiviBEId">
+
+               <Columns>
+                   <RadzenDataGridColumn TItem="ActionItem" Property="ActionItemId" Title="ActionItemId" Width="80px"/> 
+                   <RadzenDataGridColumn TItem="ActionItem" Property="SuiviBEId" Title="SuiviBEId" Width="80px"/>                      
+                   <RadzenDataGridColumn TItem="ActionItem" Property="ECR" Title="Title" Width="80px"/>
+                   <RadzenDataGridColumn TItem="ActionItem" Property="ECO" Title="Description" Width="80px"/>
+                   
+                     <RadzenDataGridColumn TItem="ActionItem" Property="ActionItemId" Context="action" Filterable="false" Sortable="false" TextAlign="TextAlign.Left" Width="50px">
+                       <Template Context="action">
+                           <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Secondary" Size="ButtonSize.Small"  @onclick:stopPropagation="true" />
+                       </Template>
+                   </RadzenDataGridColumn>
+               </Columns>
+ </RadzenDataGrid> 
+
+
+
+
+
   </Template>  
                 
     <Columns>
-         <RadzenDataGridColumn TItem="SuiviBE" Property="SuiviBEId" Title="Subject" Width="280px" />
+        <RadzenDataGridColumn TItem="SuiviBE" Property="SuiviBEId" Title="Subject" Width="280px" />
         <RadzenDataGridColumn TItem="SuiviBE" FormatString="{0:dd MMM yyyy}" Property="Date" Title="Initial Date"> 
           <Template Context="developers">
                 @String.Format("{0:d}", developers.Date)
@@ -133,60 +166,33 @@
              </EditTemplate>
         </RadzenDataGridColumn>
     </Columns>
-</RadzenDataGrid>
-
-
-    <RadzenLabel>Actions</RadzenLabel>
-         <SidepanelComponent @ref="createSidepanel" Title="Create" SubTitle="Actions">
-            <FormCreateSidePanel ButtonAction="Create" act="@act" OnValidSubmit="@CreateActionList" />
-        </SidepanelComponent>
-
-        <RadzenButton Text="Create Action" Icon="report" ButtonStyle="ButtonStyle.Light" Click=@OpenCreateForm />
-        <RadzenButton Variant="Variant.Outlined" Click=@Close Text="Light" ButtonStyle="ButtonStyle.Light" />
-        <Codeblock Code="@codeblock1" />
-        <hr />
+</RadzenDataGrid> 
 
 
 
-<RadzenDataGrid @ref="gridaction"  AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="DataGridEditMode.Single"
-                Data="@dev.ActionItems" TItem="ActionItem" CellRender="@CellRender" RowRender="@RowRender" ExpandMode="DataGridExpandMode.Single"
-                SelectionMode="DataGridSelectionMode.Single" >
 
-               <Columns>
-                   <RadzenDataGridColumn TItem="ActionItem" Property="ActionItemId" Title="ActionItemId" Width="80px"/> 
-                   <RadzenDataGridColumn TItem="ActionItem" Property="SuiviBEId" Title="SuiviBEId" Width="80px"/>                      
-                   <RadzenDataGridColumn TItem="ActionItem" Property="ECR" Title="Title" Width="80px"/>
-                   <RadzenDataGridColumn TItem="ActionItem" Property="ECO" Title="Description" Width="80px"/>
-                   
-                     <RadzenDataGridColumn TItem="ActionItem" Property="ActionId" Context="action" Filterable="false" Sortable="false" TextAlign="TextAlign.Left" Width="50px">
-                       <Template Context="action">
-                           <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Secondary" Size="ButtonSize.Small"  @onclick:stopPropagation="true" />
-                       </Template>
-                   </RadzenDataGridColumn>
-               </Columns>
- </RadzenDataGrid> 
 
 
 @code 
 {
-        RadzenDataGrid<ActionItem>? gridaction;
-        RadzenDataGrid<SuiviBE>? grid; 
-        //SuiviBE[]? developers { get; set; }
+    RadzenDataGrid<ActionItem>? gridaction;
+    RadzenDataGrid<SuiviBE>? grid; 
+    //SuiviBE[]? developers { get; set; }
 
-        ActionItem act = new ActionItem();   
+    ActionItem act = new ActionItem();   
 
-        SuiviBE dev = new SuiviBE();   
+    SuiviBE dev = new SuiviBE();   
 
-        IEnumerable<ActionItem>? action;
-        IEnumerable<SuiviBE>? developers;
+    IEnumerable<ActionItem>? action;
+    IEnumerable<SuiviBE>? developers;
 
-        DateTime? value = DateTime.Now;
+    DateTime? value = DateTime.Now;
 
-        IList<SuiviBE>? selectedDeveloper; 
+    IList<SuiviBE>? selectedDeveloper; 
 
-        [Parameter] public bool WithColumnPicker { get; set; } = false;
-        [Parameter] public int suivibeId { get; set; }
-
+    [Parameter] public bool WithColumnPicker { get; set; } = false;
+    [Parameter] public int suivibeId { get; set; }
+    [Parameter] public int ActionItemId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -195,25 +201,17 @@
         {
             PropertyNameCaseInsensitive = true
        };
-       dev = await client.GetFromJsonAsync<SuiviBE>($"api/etude/{suivibeId}",options);    
+        // dev = await client.GetFromJsonAsync<SuiviBE>($"api/etude/{suivibeId}",options);    
     }   
 
-   //  protected async override Task OnParametersSetAsync()
-   // {
-         
-    //   var options = new JsonSerializerOptions
-    //   {
-    //        PropertyNameCaseInsensitive = true
-    //   };    
-    //    dev = await client.GetFromJsonAsync<SuiviBE>($"api/etude/{suivibeId}",options);     
 
-  //  }
-       
+
     async Task CreateActionList()
-    {        
+    {
+        //var suivibeId = await client.GetAsync($"api/etude/{dev.SuiviBEId}");
         act.SuiviBEId = suivibeId;    
        await client.PutAsJsonAsync($"api/etude/{suivibeId}", act);
-       // await client.PostAsJsonAsync($"api/etude/{suivibeId}", act);
+       await client.PostAsJsonAsync($"api/etude/{suivibeId}", act);
         await client.GetAsync($"api/etude/{suivibeId}");
         uriHelper.NavigateTo($"/etude");
     }
