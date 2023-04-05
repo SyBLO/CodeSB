@@ -53,7 +53,7 @@ namespace ServiceDT.Server.Controllers
         {
             SuiviBE? developer = await _context.SuiviBEs
                                       .Include(a => a.ActionItems)
-                                     .FirstOrDefaultAsync(d => d.SuiviBEId == id);
+                                      .FirstOrDefaultAsync(d => d.SuiviBEId == id);
 
             if (developer == null)
             {
