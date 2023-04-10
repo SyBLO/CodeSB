@@ -11,7 +11,8 @@ namespace ServiceDT.Shared.Models
 {
     public class SuiviBE
     {
-        public int? SuiviBEId { get; set; }
+        [Key]
+        public int SuiviBEId { get; set; }
         public string? Metier { get; set; }
         public string? ECR { get; set; }
         public string? ECO { get; set; }
@@ -51,14 +52,19 @@ namespace ServiceDT.Shared.Models
         public string? CodePrio { get; set; }
         public string? Description { get; set; }
 
-       public List<ActionItem>? ActionItems { get; set; }
+        //  public List<ActionItem>? ActionItems { get; set; }
+        public List<ActionItem>? ActionItems { get; set; }
+    }
+      
+    public class Ressource
+    {
+
     }
 
-   
- public class ActionItem
-   {
-        
-        public int ActionId { get; set; }
+    public class ActionItem
+    {
+
+        public int ActionItemId { get; set; }
         public string? Tilte { get; set; }
         public string? DescriptionA { get; set; }
         public string? State { get; set; }
@@ -66,13 +72,7 @@ namespace ServiceDT.Shared.Models
         public DateTime? PlanDate { get; set; }
         public DateTime? CloseDate { get; set; }
 
-
         public int? SuiviBEId { get; set; }
         public SuiviBE? SuiviBE { get; set; }
-    }
-
-    public class Ressource
-    {
-
     }
 }
