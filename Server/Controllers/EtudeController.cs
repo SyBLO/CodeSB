@@ -17,6 +17,7 @@ namespace ServiceDT.Server.Controllers
             this._context = context;
         }
 
+
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -69,10 +70,7 @@ namespace ServiceDT.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            //var dev = new SuiviBE { SuiviBEId = id };
-            // _context.Remove(dev);
-            // await _context.SaveChangesAsync();
-            // return NoContent();
+           
             SuiviBE? developer = await _context.SuiviBEs
                .Include(a => a.ActionItems)
                .FirstOrDefaultAsync(d => d.SuiviBEId == id);
@@ -89,6 +87,5 @@ namespace ServiceDT.Server.Controllers
             return NoContent();
 
         }
-
     }
 }
